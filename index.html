@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier Parcel Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #999;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .scanner-box {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .scanner-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .scanner-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #4ade80;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #22c55e;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #4ade80;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .rider-card {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .rider-info {
+            flex: 1;
+        }
+
+        .rider-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .rider-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .rider-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: width 0.3s;
+        }
+
+        .awb-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .awb-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #667eea;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            animation: slideIn 0.3s;
+            z-index: 1000;
+            max-width: 350px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid #4ade80;
+        }
+
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .summary-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            opacity: 0.3;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .tabs {
+                flex-wrap: nowrap;
+                overflow-x: scroll;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .beep-animation {
+            animation: beep 0.3s;
+        }
+
+        @keyframes beep {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); background: #f0f9ff; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                Courier Parcel Management System
+            </h1>
+            <p>Complete parcel tracking, rider management & reconciliation system</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Today's Inward</h3>
+                <div class="number" id="totalInward">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Assigned</h3>
+                <div class="number" id="totalAssigned">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Unassigned</h3>
+                <div class="number" id="totalUnassigned">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Riders</h3>
+                <div class="number" id="totalRiders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Returned</h3>
+                <div class="number" id="totalReturned">0</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('inward')">📦 Morning Inward</div>
+            <div class="tab" onclick="switchTab('riders')">👥 Riders</div>
+            <div class="tab" onclick="switchTab('assign')">📋 Assign Parcels</div>
+            <div class="tab" onclick="switchTab('returns')">🌙 Evening Returns</div>
+            <div class="tab" onclick="switchTab('summary')">📊 Summary</div>
+        </div>
+
+        <!-- Morning Inward Section -->
+        <div id="inward" class="section active">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                Morning Parcel Inward Scanning
+            </h2>
+            
+            <div class="alert alert-info">
+                <strong>📌 Instructions:</strong> Scan all incoming parcels. System will auto-capture AWB numbers with date/time.
+            </div>
+
+            <div class="scanner-box">
+                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Scan AWB Number:</label>
+                <input 
+                    type="text" 
+                    id="inwardScanner" 
+                    class="scanner-input" 
+                    placeholder="Scanner se AWB scan karein ya manually enter karein..."
+                    autofocus
+                >
+                <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                    <button class="btn btn-primary" onclick="manualAddInward()">➕ Add Manually</button>
+                    <button class="btn btn-success" onclick="exportInward()">📥 Export Excel</button>
+                    <button class="btn btn-danger" onclick="clearInward()">🗑️ Clear All</button>
+                </div>
+            </div>
+
+            <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>Today's Total:</strong> <span id="inwardCount" style="font-size: 1.5em; color: #667eea;">0</span> parcels
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>AWB Number</th>
+                        <th>Scan Time</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inwardTable">
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                            <h3>No parcels scanned yet</h3>
+                            <p>Start scanning incoming parcels</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Riders Management Section -->
+        <div id="riders" class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Rider Management
+            </h2>
+
+            <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">Add New Rider</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px;">
+                    <input type="text" id="riderName" placeholder="Rider Name" style="padding: 10px; border: 2px solid #ddd; border-radius: 6px;">
+                    <input type="text" id="riderPhone" placeholder="Phone Number" style="padding: 10px; border: 2px solid #ddd; border-radius: 6px;">
+                    <input type="text" id="riderID" placeholder="Rider ID" style="padding: 10px; border: 2px solid #ddd; border-radius: 6px;">
+                    <button class="btn btn-primary" onclick="addRider()">➕ Add Rider</button>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Active Riders (<span id="riderCountDisplay">0</span>)</h3>
+            <div id="ridersList"></div>
+        </div>
+
+        <!-- Assign Parcels Section -->
+        <div id="assign" class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                Assign Parcels to Rider
+            </h2>
+
+            <div class="form-group">
+                <label>Select Rider:</label>
+                <select id="assignRiderSelect" class="scanner-input" onchange="loadAssignment()">
+                    <option value="">-- Select Rider --</option>
+                </select>
+            </div>
+
+            <div id="assignmentArea" style="display: none;">
+                <div class="alert alert-info">
+                    <strong>📌 Scan parcels for this rider:</strong> System will track assignment progress.
+                </div>
+
+                <div class="scanner-box">
+                    <input 
+                        type="text" 
+                        id="assignScanner" 
+                        class="scanner-input" 
+                        placeholder="Scan AWB to assign to rider..."
+                    >
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="assignProgress" style="width: 0%">0 / 0</div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>Assigned AWBs:</h4>
+                    <div class="awb-list" id="assignedList"></div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="completeAssignment()">✅ Complete Assignment</button>
+                    <button class="btn btn-danger" onclick="cancelAssignment()">❌ Cancel</button>
+                </div>
+            </div>
+
+            <div id="unassignedAlert" style="margin-top: 20px;"></div>
+        </div>
+
+        <!-- Evening Returns Section -->
+        <div id="returns" class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 11 12 14 22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Evening Returns Scanning
+            </h2>
+
+            <div class="form-group">
+                <label>Select Rider:</label>
+                <select id="returnRiderSelect" class="scanner-input" onchange="loadReturns()">
+                    <option value="">-- Select Rider --</option>
+                </select>
+            </div>
+
+            <div id="returnsArea" style="display: none;">
+                <div class="alert alert-warning">
+                    <strong>⚠️ Scan returned parcels:</strong> System will match with assigned parcels.
+                </div>
+
+                <div class="scanner-box">
+                    <input 
+                        type="text" 
+                        id="returnScanner" 
+                        class="scanner-input" 
+                        placeholder="Scan returned AWB numbers..."
+                    >
+                </div>
+
+                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <strong>Returns Count:</strong> <span id="returnsCount" style="font-size: 1.3em; color: #667eea;">0</span>
+                </div>
+
+                <div>
+                    <h4>Returned AWBs:</h4>
+                    <div class="awb-list" id="returnsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div id="summary" class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                Daily Summary & Reports
+            </h2>
+
+            <div class="form-group">
+                <label>Select Rider for Report:</label>
+                <select id="summaryRiderSelect" class="scanner-input" onchange="loadSummary()">
+                    <option value="">-- Select Rider --</option>
+                </select>
+            </div>
+
+            <div id="summaryContent"></div>
+
+            <div style="margin-top: 30px;">
+                <h3>Overall Summary</h3>
+                <div class="summary-grid" id="overallSummary"></div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn btn-success" onclick="exportDailyReport()">📥 Export Daily Report</button>
+                <button class="btn btn-primary" onclick="printSummary()">🖨️ Print Summary</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Global data storage
+        let inwardParcels = [];
+        let riders = [];
+        let assignments = {};
+        let returns = {};
+        let currentAssignmentRider = null;
+
+        // Initialize
+        function init() {
+            loadData();
+            updateStats();
+            updateRiderDropdowns();
+            setupEventListeners();
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            inwardParcels = JSON.parse(localStorage.getItem('inwardParcels') || '[]');
+            riders = JSON.parse(localStorage.getItem('riders') || '[]');
+            assignments = JSON.parse(localStorage.getItem('assignments') || '{}');
+            returns = JSON.parse(localStorage.getItem('returns') || '{}');
+            
+            displayInward();
+            displayRiders();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('inwardParcels', JSON.stringify(inwardParcels));
+            localStorage.setItem('riders', JSON.stringify(riders));
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+            localStorage.setItem('returns', JSON.stringify(returns));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Inward scanner
+            document.getElementById('inwardScanner').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const awb = this.value.trim().toUpperCase();
+                    if (awb) {
+                        addInwardParcel(awb);
+                        this.value = '';
+                    }
+                }
+            });
+
+            // Assignment scanner
+            document.getElementById('assignScanner').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const awb = this.value.trim().toUpperCase();
+                    if (awb && currentAssignmentRider) {
+                        assignParcel(awb);
+                        this.value = '';
+                    }
+                }
+            });
+
+            // Return scanner
+            document.getElementById('returnScanner').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const awb = this.value.trim().toUpperCase();
+                    const rider = document.getElementById('returnRiderSelect').value;
+                    if (awb && rider) {
+                        addReturn(rider, awb);
+                        this.value = '';
+                    }
+                }
+            });
+        }
+
+        // Add inward parcel
+        function addInwardParcel(awb) {
+            // Check duplicate
+            if (inwardParcels.find(p => p.awb === awb)) {
+                showNotification('⚠️ AWB already scanned!', 'error');
+                return;
+            }
+
+            const parcel = {
+                id: Date.now(),
+                awb: awb,
+                date: new Date().toLocaleDateString('en-IN'),
+                time: new Date().toLocaleTimeString('en-IN'),
+                timestamp: new Date().toISOString()
+            };
+
+            inwardParcels.unshift(parcel);
+            saveData();
+            displayInward();
+            updateStats();
+            
+            document.getElementById('inwardScanner').classList.add('beep-animation');
+            setTimeout(() => document.getElementById('inwardScanner').classList.remove('beep-animation'), 300);
+            
+            showNotification('✅ Parcel scanned: ' + awb, 'success');
+            playBeep();
+        }
+
+        // Manual add inward
+        function manualAddInward() {
+            const awb = prompt('Enter AWB Number:');
+            if (awb) {
+                addInwardParcel(awb.trim().toUpperCase());
+            }
+        }
+
+        // Display inward parcels
+        function displayInward() {
+            const tbody = document.getElementById('inwardTable');
+            
+            if (inwardParcels.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                            <h3>No parcels scanned yet</h3>
+                            <p>Start scanning incoming parcels</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = inwardParcels.map((p, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td style="font-family: monospace; font-weight: bold; color: #667eea;">${p.awb}</td>
+                    <td>${p.time}</td>
+                    <td>${p.date}</td>
+                    <td>
+                        <button class="btn btn-danger btn-small" onclick="deleteInward(${p.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('inwardCount').textContent = inwardParcels.length;
+        }
+
+        // Delete inward
+        function deleteInward(id) {
+            if (confirm('Delete this parcel?')) {
+                inwardParcels = inwardParcels.filter(p => p.id !== id);
+                saveData();
+                displayInward();
+                updateStats();
+                showNotification('Parcel deleted', 'success');
+            }
+        }
+
+        // Clear all inward
+        function clearInward() {
+            if (confirm('⚠️ Clear ALL inward parcels? This cannot be undone!')) {
+                if (confirm('Are you absolutely sure?')) {
+                    inwardParcels = [];
+                    saveData();
+                    displayInward();
+                    updateStats();
+                    showNotification('All parcels cleared', 'success');
+                }
+            }
+        }
+
+        // Export inward
+        function exportInward() {
+            if (inwardParcels.length === 0) {
+                showNotification('No data to export', 'error');
+                return;
+            }
+
+            const csv = [
+                ['#', 'AWB Number', 'Date', 'Time'],
+                ...inwardParcels.map((p, idx) => [idx + 1, p.awb, p.date, p.time])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `inward-parcels-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Excel exported!', 'success');
+        }
+
+        // Add rider
+        function addRider() {
+            const name = document.getElementById('riderName').value.trim();
+            const phone = document.getElementById('riderPhone').value.trim();
+            const id = document.getElementById('riderID').value.trim();
+
+            if (!name || !phone || !id) {
+                showNotification('Please fill all rider details', 'error');
+                return;
+            }
+
+            // Check duplicate ID
+            if (riders.find(r => r.id === id)) {
+                showNotification('Rider ID already exists', 'error');
+                return;
+            }
+
+            const rider = {
+                id: id,
+                name: name,
+                phone: phone,
+                addedDate: new Date().toLocaleDateString('en-IN')
+            };
+
+            riders.push(rider);
+            saveData();
+            displayRiders();
+            updateRiderDropdowns();
+            updateStats();
+
+            document.getElementById('riderName').value = '';
+            document.getElementById('riderPhone').value = '';
+            document.getElementById('riderID').value = '';
+
+            showNotification('✅ Rider added: ' + name, 'success');
+        }
+
+        // Display riders
+        function displayRiders() {
+            const container = document.getElementById('ridersList');
+            
+            if (riders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
+                        <h3>No riders added</h3>
+                        <p>Add your first rider above</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = riders.map(r => `
+                <div class="rider-card">
+                    <div class="rider-info">
+                        <h4>${r.name}</h4>
+                        <p>📱 ${r.phone} | 🆔 ${r.id} | Added: ${r.addedDate}</p>
+                    </div>
+                    <div class="rider-actions">
+                        <button class="btn btn-primary btn-small" onclick="viewRiderDetails('${r.id}')">View</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteRider('${r.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('riderCountDisplay').textContent = riders.length;
+        }
+
+        // Delete rider
+        function deleteRider(id) {
+            const rider = riders.find(r => r.id === id);
+            if (confirm(`Delete rider ${rider.name}?`)) {
+                riders = riders.filter(r => r.id !== id);
+                delete assignments[id];
+                delete returns[id];
+                saveData();
+                displayRiders();
+                updateRiderDropdowns();
+                updateStats();
+                showNotification('Rider deleted', 'success');
+            }
+        }
+
+        // View rider details
+        function viewRiderDetails(id) {
+            const rider = riders.find(r => r.id === id);
+            const assigned = assignments[id] ? assignments[id].length : 0;
+            const returned = returns[id] ? returns[id].length : 0;
+            
+            alert(`
+Rider Details:
+━━━━━━━━━━━━━━━━━━
+Name: ${rider.name}
+Phone: ${rider.phone}
+ID: ${rider.id}
+━━━━━━━━━━━━━━━━━━
+Today's Stats:
+Assigned: ${assigned} parcels
+Returned: ${returned} parcels
+Out for delivery: ${assigned - returned} parcels
+            `);
+        }
+
+        // Update rider dropdowns
+        function updateRiderDropdowns() {
+            const selects = ['assignRiderSelect', 'returnRiderSelect', 'summaryRiderSelect'];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                
+                select.innerHTML = '<option value="">-- Select Rider --</option>' +
+                    riders.map(r => `<option value="${r.id}">${r.name} (${r.id})</option>`).join('');
+                
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            });
+        }
+
+        // Load assignment
+        function loadAssignment() {
+            const riderId = document.getElementById('assignRiderSelect').value;
+            
+            if (!riderId) {
+                document.getElementById('assignmentArea').style.display = 'none';
+                currentAssignmentRider = null;
+                return;
+            }
+
+            currentAssignmentRider = riderId;
+            document.getElementById('assignmentArea').style.display = 'block';
+            
+            if (!assignments[riderId]) {
+                assignments[riderId] = [];
+            }
+
+            updateAssignmentDisplay();
+            document.getElementById('assignScanner').focus();
+        }
+
+        // Assign parcel
+        function assignParcel(awb) {
+            // Check if parcel exists in inward
+            if (!inwardParcels.find(p => p.awb === awb)) {
+                showNotification('⚠️ AWB not found in inward list!', 'error');
+                return;
+            }
+
+            // Check if already assigned to this rider
+            if (assignments[currentAssignmentRider].find(a => a === awb)) {
+                showNotification('⚠️ Already assigned to this rider!', 'error');
+                return;
+            }
+
+            // Check if assigned to another rider
+            for (let rId in assignments) {
+                if (rId !== currentAssignmentRider && assignments[rId].includes(awb)) {
+                    const rider = riders.find(r => r.id === rId);
+                    showNotification(`⚠️ Already assigned to ${rider.name}!`, 'error');
+                    return;
+                }
+            }
+
+            assignments[currentAssignmentRider].push(awb);
+            saveData();
+            updateAssignmentDisplay();
+            updateStats();
+            
+            showNotification('✅ Assigned: ' + awb, 'success');
+            playBeep();
+        }
+
+        // Update assignment display
+        function updateAssignmentDisplay() {
+            const assigned = assignments[currentAssignmentRider] || [];
+            const total = inwardParcels.length;
+            const percentage = total > 0 ? (assigned.length / total * 100) : 0;
+
+            document.getElementById('assignProgress').style.width = percentage + '%';
+            document.getElementById('assignProgress').textContent = `${assigned.length} / ${total}`;
+
+            const list = document.getElementById('assignedList');
+            if (assigned.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999;">No parcels assigned yet</p>';
+            } else {
+                list.innerHTML = assigned.map((awb, idx) => `
+                    <div class="awb-item">
+                        <span><strong>${idx + 1}.</strong> ${awb}</span>
+                        <button class="btn btn-danger btn-small" onclick="removeAssignment('${awb}')">Remove</button>
+                    </div>
+                `).join('');
+            }
+
+            checkUnassigned();
+        }
+
+        // Remove assignment
+        function removeAssignment(awb) {
+            assignments[currentAssignmentRider] = assignments[currentAssignmentRider].filter(a => a !== awb);
+            saveData();
+            updateAssignmentDisplay();
+            updateStats();
+            showNotification('Assignment removed', 'success');
+        }
+
+        // Complete assignment
+        function completeAssignment() {
+            const rider = riders.find(r => r.id === currentAssignmentRider);
+            const count = assignments[currentAssignmentRider].length;
+            
+            if (confirm(`Complete assignment for ${rider.name}?\n${count} parcels assigned.`)) {
+                showNotification(`✅ Assignment completed for ${rider.name}`, 'success');
+                document.getElementById('assignRiderSelect').value = '';
+                loadAssignment();
+            }
+        }
+
+        // Cancel assignment
+        function cancelAssignment() {
+            document.getElementById('assignRiderSelect').value = '';
+            loadAssignment();
+        }
+
+        // Check unassigned parcels
+        function checkUnassigned() {
+            const allAssigned = Object.values(assignments).flat();
+            const unassigned = inwardParcels.filter(p => !allAssigned.includes(p.awb));
+
+            const alert = document.getElementById('unassignedAlert');
+            
+            if (unassigned.length === 0) {
+                alert.innerHTML = '<div class="alert alert-success"><strong>✅ All parcels assigned!</strong></div>';
+            } else {
+                alert.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠️ ${unassigned.length} Unassigned Parcels:</strong>
+                        <div class="awb-list" style="margin-top: 10px; max-height: 200px;">
+                            ${unassigned.map(p => `<div class="awb-item"><span>${p.awb}</span></div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load returns
+        function loadReturns() {
+            const riderId = document.getElementById('returnRiderSelect').value;
+            
+            if (!riderId) {
+                document.getElementById('returnsArea').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('returnsArea').style.display = 'block';
+            
+            if (!returns[riderId]) {
+                returns[riderId] = [];
+            }
+
+            updateReturnsDisplay(riderId);
+            document.getElementById('returnScanner').focus();
+        }
+
+        // Add return
+        function addReturn(riderId, awb) {
+            // Check if assigned to this rider
+            if (!assignments[riderId] || !assignments[riderId].includes(awb)) {
+                showNotification('⚠️ AWB not assigned to this rider!', 'error');
+                return;
+            }
+
+            // Check if already returned
+            if (returns[riderId].includes(awb)) {
+                showNotification('⚠️ Already marked as returned!', 'error');
+                return;
+            }
+
+            returns[riderId].push(awb);
+            saveData();
+            updateReturnsDisplay(riderId);
+            updateStats();
+            
+            showNotification('✅ Return scanned: ' + awb, 'success');
+            playBeep();
+        }
+
+        // Update returns display
+        function updateReturnsDisplay(riderId) {
+            const returned = returns[riderId] || [];
+            document.getElementById('returnsCount').textContent = returned.length;
+
+            const list = document.getElementById('returnsList');
+            if (returned.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999;">No returns scanned yet</p>';
+            } else {
+                list.innerHTML = returned.map((awb, idx) => `
+                    <div class="awb-item">
+                        <span><strong>${idx + 1}.</strong> ${awb}</span>
+                        <button class="btn btn-danger btn-small" onclick="removeReturn('${riderId}', '${awb}')">Remove</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Remove return
+        function removeReturn(riderId, awb) {
+            returns[riderId] = returns[riderId].filter(r => r !== awb);
+            saveData();
+            updateReturnsDisplay(riderId);
+            updateStats();
+            showNotification('Return removed', 'success');
+        }
+
+        // Load summary
+        function loadSummary() {
+            const riderId = document.getElementById('summaryRiderSelect').value;
+            const content = document.getElementById('summaryContent');
+            
+            if (!riderId) {
+                content.innerHTML = '';
+                return;
+            }
+
+            const rider = riders.find(r => r.id === riderId);
+            const assigned = assignments[riderId] ? assignments[riderId].length : 0;
+            const returned = returns[riderId] ? returns[riderId].length : 0;
+            const outForDelivery = assigned - returned;
+
+            // Calculate missing AWBs
+            const assignedAWBs = assignments[riderId] || [];
+            const returnedAWBs = returns[riderId] || [];
+            const missingAWBs = assignedAWBs.filter(awb => !returnedAWBs.includes(awb));
+
+            content.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>Rider:</strong> ${rider.name} (${rider.id}) | 📱 ${rider.phone}
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>Total Assigned</h3>
+                        <div class="value">${assigned}</div>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);">
+                        <h3>Delivered</h3>
+                        <div class="value">${outForDelivery}</div>
+                        <p style="font-size: 0.9em; margin-top: 5px;">(Assumed)</p>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">
+                        <h3>Returned</h3>
+                        <div class="value">${returned}</div>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <h3>Not Returned</h3>
+                        <div class="value">${missingAWBs.length}</div>
+                    </div>
+                </div>
+
+                ${missingAWBs.length > 0 ? `
+                    <div class="alert alert-warning" style="margin-top: 20px;">
+                        <strong>⚠️ Missing / Not Returned AWBs (${missingAWBs.length}):</strong>
+                        <div class="awb-list" style="margin-top: 10px;">
+                            ${missingAWBs.map(awb => `<div class="awb-item"><span>${awb}</span></div>`).join('')}
+                        </div>
+                    </div>
+                ` : `
+                    <div class="alert alert-success" style="margin-top: 20px;">
+                        <strong>✅ All parcels accounted for!</strong>
+                    </div>
+                `}
+            `;
+
+            generateOverallSummary();
+        }
+
+        // Generate overall summary
+        function generateOverallSummary() {
+            const totalAssigned = Object.values(assignments).flat().length;
+            const totalReturned = Object.values(returns).flat().length;
+            const totalOutForDelivery = totalAssigned - totalReturned;
+
+            document.getElementById('overallSummary').innerHTML = `
+                <div class="summary-card">
+                    <h3>Total Inward</h3>
+                    <div class="value">${inwardParcels.length}</div>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                    <h3>Total Assigned</h3>
+                    <div class="value">${totalAssigned}</div>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);">
+                    <h3>Out for Delivery</h3>
+                    <div class="value">${totalOutForDelivery}</div>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">
+                    <h3>Total Returned</h3>
+                    <div class="value">${totalReturned}</div>
+                </div>
+            `;
+        }
+
+        // Export daily report
+        function exportDailyReport() {
+            const data = [];
+            
+            riders.forEach(rider => {
+                const assigned = assignments[rider.id] || [];
+                const returned = returns[rider.id] || [];
+                const missing = assigned.filter(awb => !returned.includes(awb));
+
+                data.push([
+                    rider.name,
+                    rider.id,
+                    assigned.length,
+                    assigned.length - returned.length,
+                    returned.length,
+                    missing.length
+                ]);
+            });
+
+            const csv = [
+                ['Rider Name', 'Rider ID', 'Assigned', 'Delivered (Assumed)', 'Returned', 'Missing'],
+                ...data
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `daily-report-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Report exported!', 'success');
+        }
+
+        // Print summary
+        function printSummary() {
+            window.print();
+        }
+
+        // Update stats
+        function updateStats() {
+            const totalAssigned = Object.values(assignments).flat().length;
+            const totalReturned = Object.values(returns).flat().length;
+            const totalUnassigned = inwardParcels.length - totalAssigned;
+
+            document.getElementById('totalInward').textContent = inwardParcels.length;
+            document.getElementById('totalAssigned').textContent = totalAssigned;
+            document.getElementById('totalUnassigned').textContent = Math.max(0, totalUnassigned);
+            document.getElementById('totalRiders').textContent = riders.length;
+            document.getElementById('totalReturned').textContent = totalReturned;
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+
+            if (tab === 'summary') {
+                generateOverallSummary();
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Play beep sound
+        function playBeep() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
